@@ -2,7 +2,8 @@
 #include <fstream>
 #include <vector>
 #include <string>
-#include <cmath>
+#define _USE_MATH_DEFINES
+#include <math.h>
 
 struct Point {
     float x, y, z;
@@ -10,7 +11,6 @@ struct Point {
 
 // Função para guardar os pontos no ficheiro .3d
 void saveToFile(std::string filename, const std::vector<Point>& points) {
-    // Tenta guardar na pasta atual. Se quiseres numa pasta específica, ajusta o caminho.
     std::ofstream file(filename);
     if (file.is_open()) {
         file << points.size() << "\n";
@@ -18,9 +18,9 @@ void saveToFile(std::string filename, const std::vector<Point>& points) {
             file << p.x << " " << p.y << " " << p.z << "\n";
         }
         file.close();
-        std::cout << "Ficheiro " << filename << " gerado com sucesso (" << points.size() << " vertices)." << std::endl;
+        std::cout << "Gerado: " << filename << " (" << points.size() << " vertices)" << std::endl;
     } else {
-        std::cerr << "Erro ao abrir o ficheiro!" << std::endl;
+        std::cerr << "Erro ao abrir ficheiro!" << std::endl;
     }
 }
 
@@ -37,94 +37,113 @@ void createPlane(float size, int divisions, std::string filename) {
             float x2 = x1 + step;
             float z2 = z1 + step;
 
-            // Triângulo 1
-            points.push_back({x1, 0, z1});
-            points.push_back({x1, 0, z2});
-            points.push_back({x2, 0, z2});
-            // Triângulo 2
-            points.push_back({x1, 0, z1});
-            points.push_back({x2, 0, z2});
-            points.push_back({x2, 0, z1});
+            points.push_back({x1, 0, z1}); points.push_back({x1, 0, z2}); points.push_back({x2, 0, z2});
+            points.push_back({x1, 0, z1}); points.push_back({x2, 0, z2}); points.push_back({x2, 0, z1});
         }
     }
     saveToFile(filename, points);
 }
 
 // --- BOX ---
-void createBox(float units_x, float units_y, float units_z, int divisions, std::string filename) {
+void createBox(float size, int divisions, std::string filename) {
     std::vector<Point> points;
-    float dx = units_x / divisions;
-    float dy = units_y / divisions;
-    float dz = units_z / divisions;
-
-    float x_start = -units_x / 2.0f;
-    float y_start = -units_y / 2.0f;
-    float z_start = -units_z / 2.0f;
+    float step = size / divisions;
+    float start = -size / 2.0f;
 
     for (int i = 0; i < divisions; i++) {
         for (int j = 0; j < divisions; j++) {
-            float x = x_start + i * dx;
-            float y = y_start + i * dy;
-            float z = z_start + j * dz;
-            
-            float nx = x + dx;
-            float ny = y + dy;
-            float nz = z + dz;
+            float a = start + i * step;
+            float b = start + j * step;
+            float na = a + step;
+            float nb = b + step;
+            float fixed = size / 2.0f;
 
-            // Face Topo (Y positivo)
-            points.push_back({x,  units_y/2, z});  points.push_back({x,  units_y/2, nz}); points.push_back({nx, units_y/2, nz});
-            points.push_back({x,  units_y/2, z});  points.push_back({nx, units_y/2, nz}); points.push_back({nx, units_y/2, z});
+            // Topo e Base (Y fixo)
+            points.push_back({a,  fixed, b});  points.push_back({a,  fixed, nb}); points.push_back({na, fixed, nb});
+            points.push_back({a,  fixed, b});  points.push_back({na, fixed, nb}); points.push_back({na, fixed, b});
+            points.push_back({a, -fixed, b});  points.push_back({na, -fixed, nb}); points.push_back({a, -fixed, nb});
+            points.push_back({a, -fixed, b});  points.push_back({na, -fixed, b});  points.push_back({na, -fixed, nb});
 
-            // Face Base (Y negativo)
-            points.push_back({x, -units_y/2, z});  points.push_back({nx, -units_y/2, nz}); points.push_back({x, -units_y/2, nz});
-            points.push_back({x, -units_y/2, z});  points.push_back({nx, -units_y/2, z});  points.push_back({nx, -units_y/2, nz});
+            // Frente e Tras (Z fixo)
+            points.push_back({a, b,  fixed});  points.push_back({na, b,  fixed});  points.push_back({na, nb, fixed});
+            points.push_back({a, b,  fixed});  points.push_back({na, nb, fixed});  points.push_back({a,  nb, fixed});
+            points.push_back({a, b, -fixed});  points.push_back({a,  nb, -fixed}); points.push_back({na, nb, -fixed});
+            points.push_back({a, b, -fixed});  points.push_back({na, nb, -fixed}); points.push_back({na, b, -fixed});
 
-            // Face Frente (Z positivo)
-            float fx = x_start + i * dx;
-            float fy = y_start + j * dy;
-            float nfx = fx + dx;
-            float nfy = fy + dy;
-            points.push_back({fx,  fy,  units_z/2}); points.push_back({nfx, fy,  units_z/2}); points.push_back({nfx, nfy, units_z/2});
-            points.push_back({fx,  fy,  units_z/2}); points.push_back({nfx, nfy, units_z/2}); points.push_back({fx,  nfy, units_z/2});
+            // Laterais (X fixo)
+            points.push_back({ fixed, a, b});  points.push_back({ fixed, na, nb}); points.push_back({ fixed, a, nb});
+            points.push_back({ fixed, a, b});  points.push_back({ fixed, na, b});  points.push_back({ fixed, na, nb});
+            points.push_back({-fixed, a, b});  points.push_back({-fixed, a, nb});  points.push_back({-fixed, na, nb});
+            points.push_back({-fixed, a, b});  points.push_back({-fixed, na, nb}); points.push_back({-fixed, na, b});
+        }
+    }
+    saveToFile(filename, points);
+}
 
-            // Face Trás (Z negativo)
-            points.push_back({fx,  fy, -units_z/2}); points.push_back({fx,  nfy, -units_z/2}); points.push_back({nfx, nfy, -units_z/2});
-            points.push_back({fx,  fy, -units_z/2}); points.push_back({nfx, nfy, -units_z/2}); points.push_back({nfx, fy,  -units_z/2});
+// --- SPHERE ---
+void createSphere(float radius, int slices, int stacks, std::string filename) {
+    std::vector<Point> points;
+    float alphaStep = 2.0f * M_PI / slices;
+    float betaStep = M_PI / stacks;
 
-            // Face Direita (X positivo)
-            float rz = z_start + i * dz;
-            float ry = y_start + j * dy;
-            float nrz = rz + dz;
-            float nry = ry + dy;
-            points.push_back({units_x/2, ry,  rz});  points.push_back({units_x/2, nry, nrz}); points.push_back({units_x/2, ry,  nrz});
-            points.push_back({units_x/2, ry,  rz});  points.push_back({units_x/2, nry, rz});  points.push_back({units_x/2, nry, nrz});
+    for (int i = 0; i < slices; i++) {
+        for (int j = 0; j < stacks; j++) {
+            float a1 = i * alphaStep; float a2 = (i + 1) * alphaStep;
+            float b1 = -M_PI/2.0f + j * betaStep; float b2 = -M_PI/2.0f + (j + 1) * betaStep;
 
-            // Face Esquerda (X negativo)
-            points.push_back({-units_x/2, ry,  rz});  points.push_back({-units_x/2, ry,  nrz}); points.push_back({-units_x/2, nry, nrz});
-            points.push_back({-units_x/2, ry,  rz});  points.push_back({-units_x/2, nry, nrz}); points.push_back({-units_x/2, nry, rz});
+            Point p1 = {radius*cos(b1)*sin(a1), radius*sin(b1), radius*cos(b1)*cos(a1)};
+            Point p2 = {radius*cos(b1)*sin(a2), radius*sin(b1), radius*cos(b1)*cos(a2)};
+            Point p3 = {radius*cos(b2)*sin(a1), radius*sin(b2), radius*cos(b2)*cos(a1)};
+            Point p4 = {radius*cos(b2)*sin(a2), radius*sin(b2), radius*cos(b2)*cos(a2)};
+
+            points.push_back(p1); points.push_back(p2); points.push_back(p4);
+            points.push_back(p1); points.push_back(p4); points.push_back(p3);
+        }
+    }
+    saveToFile(filename, points);
+}
+
+// --- CONE ---
+void createCone(float radius, float height, int slices, int stacks, std::string filename) {
+    std::vector<Point> points;
+    float alphaStep = 2.0f * M_PI / slices;
+    float hStep = height / stacks;
+    float rStep = radius / stacks;
+
+    for (int i = 0; i < slices; i++) {
+        float a1 = i * alphaStep;
+        float a2 = (i + 1) * alphaStep;
+
+        // Base (No plano XZ, y=0)
+        points.push_back({0, 0, 0});
+        points.push_back({radius * sin(a2), 0, radius * cos(a2)});
+        points.push_back({radius * sin(a1), 0, radius * cos(a1)});
+
+        // Corpo Lateral (por camadas/stacks)
+        for (int j = 0; j < stacks; j++) {
+            float h1 = j * hStep;
+            float h2 = (j + 1) * hStep;
+            float r1 = radius - j * rStep;
+            float r2 = radius - (j + 1) * rStep;
+
+            Point p1 = {r1 * sin(a1), h1, r1 * cos(a1)};
+            Point p2 = {r1 * sin(a2), h1, r1 * cos(a2)};
+            Point p3 = {r2 * sin(a1), h2, r2 * cos(a1)};
+            Point p4 = {r2 * sin(a2), h2, r2 * cos(a2)};
+
+            points.push_back(p1); points.push_back(p2); points.push_back(p4);
+            points.push_back(p1); points.push_back(p4); points.push_back(p3);
         }
     }
     saveToFile(filename, points);
 }
 
 int main(int argc, char** argv) {
-    if (argc < 2) {
-        std::cout << "Uso: ./generator <primitiva> <params> <ficheiro.3d>" << std::endl;
-        return 1;
-    }
-
-    std::string primitive = argv[1];
-
-    if (primitive == "plane" && argc == 5) {
-        createPlane(std::stof(argv[2]), std::stoi(argv[3]), argv[4]);
-    } 
-    else if (primitive == "box" && argc == 7) {
-        // box <x> <y> <z> <divs> <file>
-        createBox(std::stof(argv[2]), std::stof(argv[3]), std::stof(argv[4]), std::stoi(argv[5]), argv[6]);
-    }
-    else {
-        std::cout << "Primitiva invalida ou numero de argumentos incorreto." << std::endl;
-    }
-
+    if (argc < 2) return 1;
+    std::string p = argv[1];
+    if (p == "plane") createPlane(std::stof(argv[2]), std::stoi(argv[3]), argv[4]);
+    else if (p == "box") createBox(std::stof(argv[2]), std::stoi(argv[3]), argv[4]);
+    else if (p == "sphere") createSphere(std::stof(argv[2]), std::stoi(argv[3]), std::stoi(argv[4]), argv[5]);
+    else if (p == "cone") createCone(std::stof(argv[2]), std::stof(argv[3]), std::stoi(argv[4]), std::stoi(argv[5]), argv[6]);
     return 0;
 }
