@@ -84,6 +84,26 @@ static void parseWindow(const std::string& xml) {
     extractAttrInt(tag, "width", gWinW);
     extractAttrInt(tag, "height", gWinH);
 }
+
+void drawAxes() {
+    glBegin(GL_LINES);
+    // Eixo X (Vermelho)
+    glColor3f(1.0f, 0.0f, 0.0f);
+    glVertex3f(-100.0f, 0.0f, 0.0f);
+    glVertex3f(100.0f, 0.0f, 0.0f);
+
+    // Eixo Y (Verde)
+    glColor3f(0.0f, 1.0f, 0.0f);
+    glVertex3f(0.0f, -100.0f, 0.0f);
+    glVertex3f(0.0f, 100.0f, 0.0f);
+
+    // Eixo Z (Azul)
+    glColor3f(0.0f, 0.0f, 1.0f);
+    glVertex3f(0.0f, 0.0f, -100.0f);
+    glVertex3f(0.0f, 0.0f, 100.0f);
+    glEnd();
+}
+
 // interpreta o XML para configurar a câmera
 static void parseCamera(const std::string& xml) {
     {
@@ -190,6 +210,10 @@ static void renderScene() {
         gCam.lookAt.x,   gCam.lookAt.y,   gCam.lookAt.z,
         gCam.up.x,       gCam.up.y,       gCam.up.z
     );
+
+    drawAxes();
+
+    glColor3f(1.0f, 1.0f, 1.0f);
 
     glBegin(GL_TRIANGLES);
     for (const auto& m : gModels) {
