@@ -29,7 +29,7 @@ struct Model {
 static int gWinW = 512, gWinH = 512;
 static Camera gCam;
 static std::vector<Model> gModels;
-
+// le o ficheiro XML para uma string
 static std::string readFileToString(const std::string& path) {
     std::ifstream in(path);
     if (!in.is_open()) {
@@ -40,7 +40,8 @@ static std::string readFileToString(const std::string& path) {
     ss << in.rdbuf();
     return ss.str();
 }
-
+/*recebe um bocado de texto XML e extrai o valor de um atributo específico key, 
+convertendo-o para float e colocando-o em out*/
 static bool extractAttrFloat(const std::string& tag, const std::string& key, float& out) {
     auto pos = tag.find(key + "=\"");
     if (pos == std::string::npos) return false;
@@ -50,14 +51,14 @@ static bool extractAttrFloat(const std::string& tag, const std::string& key, flo
     out = std::stof(tag.substr(pos, end - pos));
     return true;
 }
-
+// mesma coisa mas para int
 static bool extractAttrInt(const std::string& tag, const std::string& key, int& out) {
     float tmp;
     if (!extractAttrFloat(tag, key, tmp)) return false;
     out = (int)tmp;
     return true;
 }
-
+// mesma coisa mas para string
 static bool extractAttrStr(const std::string& tag, const std::string& key, std::string& out) {
     auto pos = tag.find(key + "=\"");
     if (pos == std::string::npos) return false;
@@ -67,7 +68,8 @@ static bool extractAttrStr(const std::string& tag, const std::string& key, std::
     out = tag.substr(pos, end - pos);
     return true;
 }
-
+/*parser XML simples para extrair as informações necessárias para configurar a janela,
+ a câmera e os modelos a serem renderizados.se tagName="window", <window width="512" height="512"*/ 
 static std::string getTagChunk(const std::string& xml, const std::string& tagName) {
     auto pos = xml.find("<" + tagName);
     if (pos == std::string::npos) return "";
@@ -75,14 +77,14 @@ static std::string getTagChunk(const std::string& xml, const std::string& tagNam
     if (end == std::string::npos) return "";
     return xml.substr(pos, end - pos);
 }
-
+// interpreta o XML para configurar a janela, câmera e modelos
 static void parseWindow(const std::string& xml) {
     std::string tag = getTagChunk(xml, "window");
     if (tag.empty()) return;
     extractAttrInt(tag, "width", gWinW);
     extractAttrInt(tag, "height", gWinH);
 }
-
+// interpreta o XML para configurar a câmera
 static void parseCamera(const std::string& xml) {
     {
         std::string tag = getTagChunk(xml, "position");
@@ -117,7 +119,8 @@ static void parseCamera(const std::string& xml) {
         }
     }
 }
-
+/*indica ao motor gráfico quais os ficheiros de modelos 3D a carregar, 
+procurando por tags <model file="..."/> no XML*/
 static std::vector<std::string> parseModelFiles(const std::string& xml) {
     std::vector<std::string> files;
     size_t pos = 0;
@@ -135,7 +138,7 @@ static std::vector<std::string> parseModelFiles(const std::string& xml) {
     }
     return files;
 }
-
+//abre o ficheiro do modelo 3D e carrega os vertices para a estrutura de dados do motor gráfico.
 static void loadModel3D(Model& m) {
     std::ifstream in(m.file);
     if (!in.is_open()) {
@@ -163,7 +166,7 @@ static void loadModel3D(Model& m) {
 
     std::cout << "Loaded " << n << " vertices from " << m.file << "\n";
 }
-
+//callback do glut para quando a janela é redimensionada,ajusta a projecao para evitar distorcoes.
 static void changeSize(int w, int h) {
     if (h == 0) h = 1;
     float ratio = (float)w / (float)h;
@@ -176,7 +179,8 @@ static void changeSize(int w, int h) {
 
     glMatrixMode(GL_MODELVIEW);
 }
-
+/*limpa o ecrã, configura a câmera e desenha os modelos 3D usando 
+glBegin(GL_TRIANGLES) e glVertex3f para cada vértice.*/
 static void renderScene() {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     glLoadIdentity();
@@ -197,7 +201,7 @@ static void renderScene() {
 
     glutSwapBuffers();
 }
-
+//inicializa o open gl
 static void initGL() {
     glEnable(GL_DEPTH_TEST);
     glPolygonMode(GL_FRONT_AND_BACK, GL_LINE); // wireframe para veres bem os triângulos
