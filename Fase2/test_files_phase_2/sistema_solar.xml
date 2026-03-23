@@ -1,0 +1,92 @@
+<world>
+    <window width="800" height="600" />
+    <camera>
+        <position x="250" y="200" z="250" />
+        <lookAt x="0" y="0" z="0" />
+        <up x="0" y="1" z="0" />
+        <projection fov="45" near="1" far="1000" />
+    </camera>
+
+    <group>
+        <group>
+            <models>
+                <model file="sun.3d" />
+            </models>
+        </group>
+
+        <group>
+            <translate x="20" y="0" z="0" />
+            <scale x="0.4" y="0.4" z="0.4" />
+            <models>
+                <model file="mercury.3d" />
+            </models>
+        </group>
+
+        <group>
+            <translate x="35" y="0" z="0" />
+            <scale x="0.7" y="0.7" z="0.7" />
+            <models>
+                <model file="venus.3d" />
+            </models>
+        </group>
+
+        <group>
+            <translate x="55" y="0" z="0" />
+            <models>
+                <model file="earth.3d" />
+            </models>
+            <group>
+                <translate x="6" y="1" z="0" />
+                <scale x="0.3" y="0.3" z="0.3" />
+                <models>
+                    <model file="moon.3d" />
+                </models>
+            </group>
+        </group>
+
+        <group>
+            <translate x="75" y="0" z="0" />
+            <scale x="0.6" y="0.6" z="0.6" />
+            <models>
+                <model file="mars.3d" />
+            </models>
+        </group>
+
+        <group>
+            <translate x="100" y="0" z="0" />
+            <scale x="0.9" y="0.9" z="0.9" />
+            <models>
+                <model file="jupiter.3d" />
+            </models>
+        </group>
+
+        <group>
+            <translate x="130" y="0" z="0" />
+            <models>
+                <model file="saturn.3d" />
+            </models>
+            <group>
+                <scale x="1.8" y="0.1" z="1.8" />
+                <models>
+                    <model file="ring.3d" />
+                </models>
+            </group>
+        </group>
+
+        <group>
+            <translate x="160" y="0" z="0" />
+            <scale x="0.8" y="0.8" z="0.8" />
+            <models>
+                <model file="uranus.3d" />
+            </models>
+        </group>
+
+        <group>
+            <translate x="185" y="0" z="0" />
+            <scale x="0.8" y="0.8" z="0.8" />
+            <models>
+                <model file="neptune.3d" />
+            </models>
+        </group>
+    </group>
+</world>

@@ -1,5 +1,4 @@
-#include <stdlib.h> // Deve vir antes da GLUT para evitar erros de redefinição no Windows
-
+#include <stdlib.h>
 #ifdef __APPLE__
 #include <GLUT/glut.h>
 #else
@@ -63,7 +62,18 @@ void parseGroup(XMLElement* element, Group& g) {
     for (XMLElement* child = element->FirstChildElement(); child; child = child->NextSiblingElement()) {
         std::string name = child->Name();
 
-        if (name == "transform") {
+        // Suporte para transformações diretas (Sistema Solar)
+        if (name == "translate" || name == "rotate" || name == "scale") {
+            Transformation trans;
+            trans.type = name;
+            trans.x = child->FloatAttribute("x", 0.0f);
+            trans.y = child->FloatAttribute("y", 0.0f);
+            trans.z = child->FloatAttribute("z", 0.0f);
+            trans.angle = child->FloatAttribute("angle", 0.0f);
+            g.transforms.push_back(trans);
+        }
+        // Suporte para tag <transform> (Testes iniciais)
+        else if (name == "transform") {
             for (XMLElement* t = child->FirstChildElement(); t; t = t->NextSiblingElement()) {
                 Transformation trans;
                 trans.type = t->Name();
@@ -100,13 +110,13 @@ void renderGroup(const Group& g) {
         else if (t.type == "scale") glScalef(t.x, t.y, t.z);
     }
 
-    glBegin(GL_TRIANGLES);
     for (int idx : g.modelIndices) {
+        glBegin(GL_TRIANGLES);
         for (size_t i = 0; i < gModels[idx].vertices.size(); i += 3) {
             glVertex3f(gModels[idx].vertices[i], gModels[idx].vertices[i+1], gModels[idx].vertices[i+2]);
         }
+        glEnd();
     }
-    glEnd();
 
     for (const auto& childGroup : g.children) {
         renderGroup(childGroup);
@@ -122,29 +132,13 @@ void renderScene() {
               gCam.lookAt.x, gCam.lookAt.y, gCam.lookAt.z, 
               gCam.up.x, gCam.up.y, gCam.up.z);
 
-    // Desenhar eixos para orientação (Positivo e Negativo)
     glBegin(GL_LINES);
-    
-    // Eixo X (Vermelho)
-    glColor3f(1.0f, 0.0f, 0.0f);
-    glVertex3f(-100.0f, 0.0f, 0.0f);
-    glVertex3f( 100.0f, 0.0f, 0.0f);
-    
-    // Eixo Y (Verde)
-    glColor3f(0.0f, 1.0f, 0.0f);
-    glVertex3f(0.0f, -100.0f, 0.0f);
-    glVertex3f(0.0f,  100.0f, 0.0f);
-    
-    // Eixo Z (Azul)
-    glColor3f(0.0f, 0.0f, 1.0f);
-    glVertex3f(0.0f, 0.0f, -100.0f);
-    glVertex3f(0.0f, 0.0f,  100.0f);
-    
+    glColor3f(1.0f, 0.0f, 0.0f); glVertex3f(-300.0f, 0.0f, 0.0f); glVertex3f(300.0f, 0.0f, 0.0f);
+    glColor3f(0.0f, 1.0f, 0.0f); glVertex3f(0.0f, -300.0f, 0.0f); glVertex3f(0.0f, 300.0f, 0.0f);
+    glColor3f(0.0f, 0.0f, 1.0f); glVertex3f(0.0f, 0.0f, -300.0f); glVertex3f(0.0f, 0.0f, 300.0f);
     glEnd();
-    glColor3f(1.0f, 1.0f, 1.0f); // Reset para branco para os modelos
 
-    glColor3f(1,1,1);
-
+    glColor3f(1.0f, 1.0f, 1.0f);
     renderGroup(gRootGroup);
     glutSwapBuffers();
 }
@@ -171,21 +165,30 @@ int main(int argc, char** argv) {
     }
 
     XMLElement* root = doc.FirstChildElement("world");
+    if (!root) return 1;
+
     XMLElement* win = root->FirstChildElement("window");
-    gWinW = win->IntAttribute("width", 800);
-    gWinH = win->IntAttribute("height", 600);
+    gWinW = (win) ? win->IntAttribute("width", 800) : 800;
+    gWinH = (win) ? win->IntAttribute("height", 600) : 600;
 
     XMLElement* cam = root->FirstChildElement("camera");
-    XMLElement* pos = cam->FirstChildElement("position");
-    gCam.pos = { pos->FloatAttribute("x"), pos->FloatAttribute("y"), pos->FloatAttribute("z") };
-    XMLElement* la = cam->FirstChildElement("lookAt");
-    gCam.lookAt = { la->FloatAttribute("x"), la->FloatAttribute("y"), la->FloatAttribute("z") };
-    XMLElement* up = cam->FirstChildElement("up");
-    gCam.up = { up->FloatAttribute("x", 0), up->FloatAttribute("y", 1), up->FloatAttribute("z", 0) };
-    XMLElement* proj = cam->FirstChildElement("projection");
-    gCam.fov = proj->FloatAttribute("fov", 45);
-    gCam.nearp = proj->FloatAttribute("near", 1);
-    gCam.farp = proj->FloatAttribute("far", 1000);
+    if (cam) {
+        XMLElement* pos = cam->FirstChildElement("position");
+        if (pos) gCam.pos = { pos->FloatAttribute("x"), pos->FloatAttribute("y"), pos->FloatAttribute("z") };
+        XMLElement* la = cam->FirstChildElement("lookAt");
+        if (la) gCam.lookAt = { la->FloatAttribute("x"), la->FloatAttribute("y"), la->FloatAttribute("z") };
+        XMLElement* up = cam->FirstChildElement("up");
+        gCam.up = (up) ? Vec3{ up->FloatAttribute("x", 0), up->FloatAttribute("y", 1), up->FloatAttribute("z", 0) } : Vec3{0, 1, 0};
+        XMLElement* proj = cam->FirstChildElement("projection");
+        if (proj) {
+            gCam.fov = proj->FloatAttribute("fov", 45);
+            gCam.nearp = proj->FloatAttribute("near", 1);
+            gCam.farp = proj->FloatAttribute("far", 1000);
+        }
+    } else {
+        gCam.pos = {250, 200, 250}; gCam.lookAt = {0,0,0}; gCam.up = {0,1,0};
+        gCam.fov = 45; gCam.nearp = 1; gCam.farp = 1000;
+    }
 
     XMLElement* group = root->FirstChildElement("group");
     if (group) parseGroup(group, gRootGroup);
