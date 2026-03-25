@@ -1,5 +1,6 @@
 <world>
     <window width="800" height="600" />
+
     <camera>
         <position x="250" y="200" z="250" />
         <lookAt x="0" y="0" z="0" />
@@ -15,29 +16,38 @@
         </group>
 
         <group>
-            <translate x="20" y="0" z="0" />
-            <scale x="0.4" y="0.4" z="0.4" />
+            <transform>
+                <translate x="20" y="0" z="0" />
+                <scale x="0.4" y="0.4" z="0.4" />
+            </transform>
             <models>
                 <model file="mercury.3d" />
             </models>
         </group>
 
         <group>
-            <translate x="35" y="0" z="0" />
-            <scale x="0.7" y="0.7" z="0.7" />
+            <transform>
+                <translate x="35" y="0" z="0" />
+                <scale x="0.7" y="0.7" z="0.7" />
+            </transform>
             <models>
                 <model file="venus.3d" />
             </models>
         </group>
 
         <group>
-            <translate x="55" y="0" z="0" />
+            <transform>
+                <translate x="55" y="0" z="0" />
+            </transform>
             <models>
                 <model file="earth.3d" />
             </models>
+
             <group>
-                <translate x="6" y="1" z="0" />
-                <scale x="0.3" y="0.3" z="0.3" />
+                <transform>
+                    <translate x="6" y="1" z="0" />
+                    <scale x="0.3" y="0.3" z="0.3" />
+                </transform>
                 <models>
                     <model file="moon.3d" />
                 </models>
@@ -45,28 +55,37 @@
         </group>
 
         <group>
-            <translate x="75" y="0" z="0" />
-            <scale x="0.6" y="0.6" z="0.6" />
+            <transform>
+                <translate x="75" y="0" z="0" />
+                <scale x="0.6" y="0.6" z="0.6" />
+            </transform>
             <models>
                 <model file="mars.3d" />
             </models>
         </group>
 
         <group>
-            <translate x="100" y="0" z="0" />
-            <scale x="0.9" y="0.9" z="0.9" />
+            <transform>
+                <translate x="100" y="0" z="0" />
+                <scale x="0.9" y="0.9" z="0.9" />
+            </transform>
             <models>
                 <model file="jupiter.3d" />
             </models>
         </group>
 
         <group>
-            <translate x="130" y="0" z="0" />
+            <transform>
+                <translate x="130" y="0" z="0" />
+            </transform>
             <models>
                 <model file="saturn.3d" />
             </models>
+
             <group>
-                <scale x="1.8" y="0.1" z="1.8" />
+                <transform>
+                    <scale x="1.8" y="0.1" z="1.8" />
+                </transform>
                 <models>
                     <model file="ring.3d" />
                 </models>
@@ -74,16 +93,20 @@
         </group>
 
         <group>
-            <translate x="160" y="0" z="0" />
-            <scale x="0.8" y="0.8" z="0.8" />
+            <transform>
+                <translate x="160" y="0" z="0" />
+                <scale x="0.8" y="0.8" z="0.8" />
+            </transform>
             <models>
                 <model file="uranus.3d" />
             </models>
         </group>
 
         <group>
-            <translate x="185" y="0" z="0" />
-            <scale x="0.8" y="0.8" z="0.8" />
+            <transform>
+                <translate x="185" y="0" z="0" />
+                <scale x="0.8" y="0.8" z="0.8" />
+            </transform>
             <models>
                 <model file="neptune.3d" />
             </models>

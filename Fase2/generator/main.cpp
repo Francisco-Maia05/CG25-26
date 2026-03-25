@@ -19,7 +19,8 @@ void saveToFile(std::string filename, const std::vector<Point>& points) {
         }
         file.close();
         std::cout << "Gerado: " << filename << " (" << points.size() << " vertices)" << std::endl;
-    } else {
+    }
+    else {
         std::cerr << "Erro ao abrir ficheiro!" << std::endl;
     }
 }
@@ -37,10 +38,16 @@ void createPlane(float size, int divisions, std::string filename) {
             float x2 = x1 + step;
             float z2 = z1 + step;
 
-            points.push_back({x1, 0, z1}); points.push_back({x1, 0, z2}); points.push_back({x2, 0, z2});
-            points.push_back({x1, 0, z1}); points.push_back({x2, 0, z2}); points.push_back({x2, 0, z1});
+            points.push_back({x1, 0, z1});
+            points.push_back({x1, 0, z2});
+            points.push_back({x2, 0, z2});
+
+            points.push_back({x1, 0, z1});
+            points.push_back({x2, 0, z2});
+            points.push_back({x2, 0, z1});
         }
     }
+
     saveToFile(filename, points);
 }
 
@@ -58,25 +65,62 @@ void createBox(float size, int divisions, std::string filename) {
             float nb = b + step;
             float fixed = size / 2.0f;
 
-            // Topo e Base (Y fixo)
-            points.push_back({a,  fixed, b});  points.push_back({a,  fixed, nb}); points.push_back({na, fixed, nb});
-            points.push_back({a,  fixed, b});  points.push_back({na, fixed, nb}); points.push_back({na, fixed, b});
-            points.push_back({a, -fixed, b});  points.push_back({na, -fixed, nb}); points.push_back({a, -fixed, nb});
-            points.push_back({a, -fixed, b});  points.push_back({na, -fixed, b});  points.push_back({na, -fixed, nb});
+            // Topo
+            points.push_back({a, fixed, b});
+            points.push_back({a, fixed, nb});
+            points.push_back({na, fixed, nb});
 
-            // Frente e Tras (Z fixo)
-            points.push_back({a, b,  fixed});  points.push_back({na, b,  fixed});  points.push_back({na, nb, fixed});
-            points.push_back({a, b,  fixed});  points.push_back({na, nb, fixed});  points.push_back({a,  nb, fixed});
-            points.push_back({a, b, -fixed});  points.push_back({a,  nb, -fixed}); points.push_back({na, nb, -fixed});
-            points.push_back({a, b, -fixed});  points.push_back({na, nb, -fixed}); points.push_back({na, b, -fixed});
+            points.push_back({a, fixed, b});
+            points.push_back({na, fixed, nb});
+            points.push_back({na, fixed, b});
 
-            // Laterais (X fixo)
-            points.push_back({ fixed, a, b});  points.push_back({ fixed, na, nb}); points.push_back({ fixed, a, nb});
-            points.push_back({ fixed, a, b});  points.push_back({ fixed, na, b});  points.push_back({ fixed, na, nb});
-            points.push_back({-fixed, a, b});  points.push_back({-fixed, a, nb});  points.push_back({-fixed, na, nb});
-            points.push_back({-fixed, a, b});  points.push_back({-fixed, na, nb}); points.push_back({-fixed, na, b});
+            // Base
+            points.push_back({a, -fixed, b});
+            points.push_back({na, -fixed, nb});
+            points.push_back({a, -fixed, nb});
+
+            points.push_back({a, -fixed, b});
+            points.push_back({na, -fixed, b});
+            points.push_back({na, -fixed, nb});
+
+            // Frente
+            points.push_back({a, b, fixed});
+            points.push_back({na, b, fixed});
+            points.push_back({na, nb, fixed});
+
+            points.push_back({a, b, fixed});
+            points.push_back({na, nb, fixed});
+            points.push_back({a, nb, fixed});
+
+            // Trás
+            points.push_back({a, b, -fixed});
+            points.push_back({a, nb, -fixed});
+            points.push_back({na, nb, -fixed});
+
+            points.push_back({a, b, -fixed});
+            points.push_back({na, nb, -fixed});
+            points.push_back({na, b, -fixed});
+
+            // Lado direito
+            points.push_back({fixed, a, b});
+            points.push_back({fixed, na, nb});
+            points.push_back({fixed, a, nb});
+
+            points.push_back({fixed, a, b});
+            points.push_back({fixed, na, b});
+            points.push_back({fixed, na, nb});
+
+            // Lado esquerdo
+            points.push_back({-fixed, a, b});
+            points.push_back({-fixed, a, nb});
+            points.push_back({-fixed, na, nb});
+
+            points.push_back({-fixed, a, b});
+            points.push_back({-fixed, na, nb});
+            points.push_back({-fixed, na, b});
         }
     }
+
     saveToFile(filename, points);
 }
 
@@ -88,18 +132,26 @@ void createSphere(float radius, int slices, int stacks, std::string filename) {
 
     for (int i = 0; i < slices; i++) {
         for (int j = 0; j < stacks; j++) {
-            float a1 = i * alphaStep; float a2 = (i + 1) * alphaStep;
-            float b1 = -M_PI/2.0f + j * betaStep; float b2 = -M_PI/2.0f + (j + 1) * betaStep;
+            float a1 = i * alphaStep;
+            float a2 = (i + 1) * alphaStep;
+            float b1 = -M_PI / 2.0f + j * betaStep;
+            float b2 = -M_PI / 2.0f + (j + 1) * betaStep;
 
-            Point p1 = {radius*cos(b1)*sin(a1), radius*sin(b1), radius*cos(b1)*cos(a1)};
-            Point p2 = {radius*cos(b1)*sin(a2), radius*sin(b1), radius*cos(b1)*cos(a2)};
-            Point p3 = {radius*cos(b2)*sin(a1), radius*sin(b2), radius*cos(b2)*cos(a1)};
-            Point p4 = {radius*cos(b2)*sin(a2), radius*sin(b2), radius*cos(b2)*cos(a2)};
+            Point p1 = {radius * cos(b1) * sin(a1), radius * sin(b1), radius * cos(b1) * cos(a1)};
+            Point p2 = {radius * cos(b1) * sin(a2), radius * sin(b1), radius * cos(b1) * cos(a2)};
+            Point p3 = {radius * cos(b2) * sin(a1), radius * sin(b2), radius * cos(b2) * cos(a1)};
+            Point p4 = {radius * cos(b2) * sin(a2), radius * sin(b2), radius * cos(b2) * cos(a2)};
 
-            points.push_back(p1); points.push_back(p2); points.push_back(p4);
-            points.push_back(p1); points.push_back(p4); points.push_back(p3);
+            points.push_back(p1);
+            points.push_back(p2);
+            points.push_back(p4);
+
+            points.push_back(p1);
+            points.push_back(p4);
+            points.push_back(p3);
         }
     }
+
     saveToFile(filename, points);
 }
 
@@ -114,12 +166,12 @@ void createCone(float radius, float height, int slices, int stacks, std::string 
         float a1 = i * alphaStep;
         float a2 = (i + 1) * alphaStep;
 
-        // Base (No plano XZ, y=0)
+        // Base
         points.push_back({0, 0, 0});
         points.push_back({radius * sin(a2), 0, radius * cos(a2)});
         points.push_back({radius * sin(a1), 0, radius * cos(a1)});
 
-        // Corpo Lateral (por camadas/stacks)
+        // Corpo lateral
         for (int j = 0; j < stacks; j++) {
             float h1 = j * hStep;
             float h2 = (j + 1) * hStep;
@@ -131,19 +183,63 @@ void createCone(float radius, float height, int slices, int stacks, std::string 
             Point p3 = {r2 * sin(a1), h2, r2 * cos(a1)};
             Point p4 = {r2 * sin(a2), h2, r2 * cos(a2)};
 
-            points.push_back(p1); points.push_back(p2); points.push_back(p4);
-            points.push_back(p1); points.push_back(p4); points.push_back(p3);
+            points.push_back(p1);
+            points.push_back(p2);
+            points.push_back(p4);
+
+            points.push_back(p1);
+            points.push_back(p4);
+            points.push_back(p3);
         }
     }
+
     saveToFile(filename, points);
 }
 
 int main(int argc, char** argv) {
-    if (argc < 2) return 1;
+    if (argc < 2) {
+        std::cerr << "Uso:" << std::endl;
+        std::cerr << "  generator plane <size> <divisions> <file>" << std::endl;
+        std::cerr << "  generator box <size> <divisions> <file>" << std::endl;
+        std::cerr << "  generator sphere <radius> <slices> <stacks> <file>" << std::endl;
+        std::cerr << "  generator cone <radius> <height> <slices> <stacks> <file>" << std::endl;
+        return 1;
+    }
+
     std::string p = argv[1];
-    if (p == "plane") createPlane(std::stof(argv[2]), std::stoi(argv[3]), argv[4]);
-    else if (p == "box") createBox(std::stof(argv[2]), std::stoi(argv[3]), argv[4]);
-    else if (p == "sphere") createSphere(std::stof(argv[2]), std::stoi(argv[3]), std::stoi(argv[4]), argv[5]);
-    else if (p == "cone") createCone(std::stof(argv[2]), std::stof(argv[3]), std::stoi(argv[4]), std::stoi(argv[5]), argv[6]);
+
+    if (p == "plane") {
+        if (argc != 5) {
+            std::cerr << "Uso: generator plane <size> <divisions> <file>" << std::endl;
+            return 1;
+        }
+        createPlane(std::stof(argv[2]), std::stoi(argv[3]), argv[4]);
+    }
+    else if (p == "box") {
+        if (argc != 5) {
+            std::cerr << "Uso: generator box <size> <divisions> <file>" << std::endl;
+            return 1;
+        }
+        createBox(std::stof(argv[2]), std::stoi(argv[3]), argv[4]);
+    }
+    else if (p == "sphere") {
+        if (argc != 6) {
+            std::cerr << "Uso: generator sphere <radius> <slices> <stacks> <file>" << std::endl;
+            return 1;
+        }
+        createSphere(std::stof(argv[2]), std::stoi(argv[3]), std::stoi(argv[4]), argv[5]);
+    }
+    else if (p == "cone") {
+        if (argc != 7) {
+            std::cerr << "Uso: generator cone <radius> <height> <slices> <stacks> <file>" << std::endl;
+            return 1;
+        }
+        createCone(std::stof(argv[2]), std::stof(argv[3]), std::stoi(argv[4]), std::stoi(argv[5]), argv[6]);
+    }
+    else {
+        std::cerr << "Primitiva invalida: " << p << std::endl;
+        return 1;
+    }
+
     return 0;
 }
