@@ -1,0 +1,164 @@
+<world>
+    <window width="900" height="700" />
+
+    <camera>
+        <position x="90" y="45" z="90" />
+        <lookAt x="0" y="0" z="0" />
+        <up x="0" y="1" z="0" />
+        <projection fov="60" near="1" far="1000" />
+    </camera>
+
+    <group>
+
+        <!-- SOL -->
+        <group>
+            <transform>
+                <scale x="7" y="7" z="7"/>
+            </transform>
+            <models>
+                <model file="../models_generated/sphere.3d"/>
+            </models>
+        </group>
+
+        <!-- MERCURIO -->
+        <group>
+            <transform>
+                <rotate time="8" x="0" y="1" z="0"/>
+                <translate x="12" y="0" z="0"/>
+                <scale x="0.4" y="0.4" z="0.4"/>
+            </transform>
+            <models>
+                <model file="../models_generated/sphere.3d"/>
+            </models>
+        </group>
+
+        <!-- VENUS -->
+        <group>
+            <transform>
+                <rotate time="12" x="0" y="1" z="0"/>
+                <translate x="20" y="0" z="0"/>
+                <scale x="0.7" y="0.7" z="0.7"/>
+            </transform>
+            <models>
+                <model file="../models_generated/sphere.3d"/>
+            </models>
+        </group>
+
+        <!-- TERRA + LUA -->
+        <group>
+            <transform>
+                <rotate time="18" x="0" y="1" z="0"/>
+                <translate x="30" y="0" z="0"/>
+            </transform>
+
+            <models>
+                <model file="../models_generated/sphere.3d"/>
+            </models>
+
+            <group>
+                <transform>
+                    <rotate time="4" x="0" y="1" z="0"/>
+                    <translate x="5" y="0" z="0"/>
+                    <scale x="0.3" y="0.3" z="0.3"/>
+                </transform>
+                <models>
+                    <model file="../models_generated/sphere.3d"/>
+                </models>
+            </group>
+        </group>
+
+        <!-- MARTE -->
+        <group>
+            <transform>
+                <rotate time="24" x="0" y="1" z="0"/>
+                <translate x="42" y="0" z="0"/>
+                <scale x="0.6" y="0.6" z="0.6"/>
+            </transform>
+            <models>
+                <model file="../models_generated/sphere.3d"/>
+            </models>
+        </group>
+
+        <!-- JUPITER -->
+        <group>
+            <transform>
+                <rotate time="34" x="0" y="1" z="0"/>
+                <translate x="58" y="0" z="0"/>
+                <scale x="2.2" y="2.2" z="2.2"/>
+            </transform>
+            <models>
+                <model file="../models_generated/sphere.3d"/>
+            </models>
+        </group>
+
+<!-- SATURNO -->
+<group>
+    <transform>
+        <rotate time="42" x="0" y="1" z="0"/>
+        <translate x="75" y="0" z="0"/>
+    </transform>
+
+    <!-- planeta -->
+    <group>
+        <transform>
+            <scale x="1.8" y="1.8" z="1.8"/>
+        </transform>
+        <models>
+            <model file="../models_generated/sphere.3d"/>
+        </models>
+    </group>
+
+    <!-- anel (plane bem feito) -->
+    <group>
+        <transform>
+            <rotate angle="90" x="1" y="0" z="0"/>
+            <scale x="4" y="4" z="4"/>
+        </transform>
+        <models>
+            <model file="../models_generated/plane.3d"/>
+        </models>
+    </group>
+</group>
+        <!-- URANO -->
+        <group>
+            <transform>
+                <rotate time="52" x="0" y="1" z="0"/>
+                <translate x="90" y="0" z="0"/>
+                <scale x="1.1" y="1.1" z="1.1"/>
+            </transform>
+            <models>
+                <model file="../models_generated/sphere.3d"/>
+            </models>
+        </group>
+
+        <!-- NEPTUNO -->
+        <group>
+            <transform>
+                <rotate time="62" x="0" y="1" z="0"/>
+                <translate x="105" y="0" z="0"/>
+                <scale x="1.1" y="1.1" z="1.1"/>
+            </transform>
+            <models>
+                <model file="../models_generated/sphere.3d"/>
+            </models>
+        </group>
+
+        <!-- COMETA COM CATMULL-ROM + TEAPOT -->
+        <group>
+            <transform>
+                <translate time="20" align="True">
+                    <point x="65" y="10" z="-30"/>
+                    <point x="20" y="25" z="55"/>
+                    <point x="-60" y="5" z="20"/>
+                    <point x="-35" y="-8" z="-55"/>
+                    <point x="45" y="5" z="-45"/>
+                </translate>
+                <scale x="0.2" y="0.2" z="0.2"/>
+            </transform>
+            <models>
+                <model file="../models_generated/teapot.3d"/>
+            </models>
+        </group>
+
+    </group>
+</world>
