@@ -361,6 +361,21 @@ void buildRotationMatrix(Vec3 deriv, Vec3 up, float* m) {
     m[12] = 0; m[13] = 0; m[14] = 0; m[15] = 1;
 }
 
+
+void renderOrbit(float radius) {
+    glColor3f(0.6f, 0.6f, 0.6f);
+
+    glBegin(GL_LINE_LOOP);
+    for (int i = 0; i < 100; i++) {
+        float angle = 2 * PI * i / 100;
+        glVertex3f(radius * sin(angle), 0, radius * cos(angle));
+    }
+    glEnd();
+
+    glColor3f(1.0f, 1.0f, 1.0f);
+}
+
+
 // ------------------------------------------------------
 // Render
 // ------------------------------------------------------
@@ -370,14 +385,22 @@ void renderGroup(const Group& g) {
 
     float elapsedTime = glutGet(GLUT_ELAPSED_TIME) / 1000.0f;
 
-    for (const auto& t : g.transforms) {
+    for (size_t i = 0; i < g.transforms.size(); i++) {
+    const auto& t = g.transforms[i];
+
+    // DESENHAR ÓRBITA quando há rotate time seguido de translate estático
+    if (t.type == "rotate" && t.time > 0 && i + 1 < g.transforms.size()) {
+        const auto& next = g.transforms[i + 1];
+
+        if (next.type == "translate" && next.time == 0) {
+            float radius = sqrt(next.x * next.x + next.z * next.z);
+            renderOrbit(radius);
+        }
+    }
         if (t.type == "translate") {
             if (t.time > 0 && t.points.size() >= 4) {
                 // Desenha a curva fixa no mundo
-                glPushMatrix();
-                glLoadIdentity();
                 renderCatmullRomCurve(t.points);
-                glPopMatrix();
 
                 float gt = fmod(elapsedTime, t.time) / t.time;
 

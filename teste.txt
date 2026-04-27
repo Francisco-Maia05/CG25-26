@@ -1,6 +1,11 @@
+cd "/home/pedroc/Desktop/projetocg/CG25-26/Fase3"
 rm -rf build
 mkdir build
 cd build
 cmake ..
 make
 
+
+
+
+./engine ../test_files_phase_2/sistema_solar.xml
