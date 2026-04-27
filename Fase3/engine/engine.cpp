@@ -1,29 +1,29 @@
 #include <cstdlib>
 #define FREEGLUT_STATIC
 #include <GL/glew.h>
- 
+
 #ifdef __APPLE__
 #include <GLUT/glut.h>
 #else
 #include <GL/glut.h>
 #include <GL/glu.h>
 #endif
- 
+
 #include "tinyxml2.h"
 #include <iostream>
 #include <vector>
 #include <string>
 #include <fstream>
 #include <cmath>
- 
+
 using namespace tinyxml2;
- 
+
 // ---------------------------------------------------------------------------
 // STRUCTURES
 // ---------------------------------------------------------------------------
- 
+
 struct Vec3 { float x, y, z; };
- 
+
 struct Transformation {
     std::string type;
     // static translate / scale
@@ -37,37 +37,37 @@ struct Transformation {
     // catmull-rom control points
     std::vector<Vec3> points;
 };
- 
+
 struct Model {
     GLuint vbo_id    = 0;
     int    vertexCount = 0;
 };
- 
+
 struct Group {
     std::vector<Transformation> transforms;
     std::vector<int>            modelIndices;
     std::vector<Group>          children;
 };
- 
+
 struct Camera {
     Vec3  pos, lookAt, up;
     float fov = 60.0f, nearp = 1.0f, farp = 1000.0f;
 };
- 
+
 // ---------------------------------------------------------------------------
 // GLOBALS
 // ---------------------------------------------------------------------------
- 
+
 std::vector<Model> gModels;
 Group              gRootGroup;
 Camera             gCam;
 float              camAlpha = 0.0f, camBeta = 0.0f, camSpeed = 5.0f;
 const float        PI = 3.14159265359f;
- 
+
 // ---------------------------------------------------------------------------
 // CATMULL-ROM MATH
 // ---------------------------------------------------------------------------
- 
+
 /*  Catmull-Rom matrix (centripetal α=0.5 in the traditional formulation,
     but the standard CG course uses the Catmull-Rom matrix below).        */
 static const float CR[4][4] = {
@@ -76,7 +76,7 @@ static const float CR[4][4] = {
     {-0.5f,  0.0f,  0.5f,  0.0f},
     { 0.0f,  1.0f,  0.0f,  0.0f}
 };
- 
+
 // Multiply a 4-vector by the CR matrix and dot with a control-point vector.
 static float crEval(const float T[4], const float p[4]) {
     float res = 0.0f;
@@ -87,7 +87,7 @@ static float crEval(const float T[4], const float p[4]) {
     }
     return res;
 }
- 
+
 void getCatmullRomPoint(float t,
                         Vec3 p0, Vec3 p1, Vec3 p2, Vec3 p3,
                         Vec3* pos, Vec3* deriv)
@@ -95,10 +95,10 @@ void getCatmullRomPoint(float t,
     float px[4] = { p0.x, p1.x, p2.x, p3.x };
     float py[4] = { p0.y, p1.y, p2.y, p3.y };
     float pz[4] = { p0.z, p1.z, p2.z, p3.z };
- 
+
     float T[4]  = { t*t*t, t*t, t, 1.0f };
     float dT[4] = { 3.0f*t*t, 2.0f*t, 1.0f, 0.0f };
- 
+
     if (pos) {
         pos->x = crEval(T, px);
         pos->y = crEval(T, py);
@@ -110,7 +110,7 @@ void getCatmullRomPoint(float t,
         deriv->z = crEval(dT, pz);
     }
 }
- 
+
 void getGlobalCatmullRomPoint(float gt,
                                const std::vector<Vec3>& points,
                                Vec3* pos, Vec3* deriv)
@@ -119,19 +119,19 @@ void getGlobalCatmullRomPoint(float gt,
     float tScaled = gt * size;
     int   index   = (int)floorf(tScaled);
     float t       = tScaled - index;
- 
+
     Vec3 p0 = points[(index + size - 1) % size];
     Vec3 p1 = points[ index             % size];
     Vec3 p2 = points[(index + 1)        % size];
     Vec3 p3 = points[(index + 2)        % size];
- 
+
     getCatmullRomPoint(t, p0, p1, p2, p3, pos, deriv);
 }
- 
+
 // ---------------------------------------------------------------------------
 // DRAW CATMULL-ROM TRAJECTORY
 // ---------------------------------------------------------------------------
- 
+
 void renderCatmullRomCurve(const std::vector<Vec3>& points) {
     glBegin(GL_LINE_LOOP);
     const int steps = 200;
@@ -143,31 +143,31 @@ void renderCatmullRomCurve(const std::vector<Vec3>& points) {
     }
     glEnd();
 }
- 
+
 // ---------------------------------------------------------------------------
 // VBO LOADING
 // ---------------------------------------------------------------------------
- 
+
 int loadModelVBO(const std::string& filename) {
     std::ifstream file(filename);
     if (!file.is_open()) {
         std::cerr << "[engine] Erro: nao foi possivel abrir " << filename << std::endl;
         return -1;
     }
- 
+
     int n;
     file >> n;
- 
+
     std::vector<float> vertices;
     vertices.reserve(n * 3);
- 
+
     float x, y, z;
     while (file >> x >> y >> z) {
         vertices.push_back(x);
         vertices.push_back(y);
         vertices.push_back(z);
     }
- 
+
     Model m;
     m.vertexCount = n;
     glGenBuffers(1, &m.vbo_id);
@@ -177,24 +177,24 @@ int loadModelVBO(const std::string& filename) {
                  vertices.data(),
                  GL_STATIC_DRAW);
     glBindBuffer(GL_ARRAY_BUFFER, 0);
- 
+
     gModels.push_back(m);
     std::cout << "[engine] Carregado VBO: " << filename
               << " (" << n << " vertices)" << std::endl;
     return (int)gModels.size() - 1;
 }
- 
+
 // ---------------------------------------------------------------------------
 // XML PARSING
 // ---------------------------------------------------------------------------
- 
+
 void parseGroup(XMLElement* element, Group& g) {
     for (XMLElement* child = element->FirstChildElement();
          child;
          child = child->NextSiblingElement())
     {
         std::string name = child->Name();
- 
+
         if (name == "transform") {
             // Recurse into <transform> wrapper
             parseGroup(child, g);
@@ -208,7 +208,7 @@ void parseGroup(XMLElement* element, Group& g) {
             t.angle = child->FloatAttribute("angle", 0.0f);
             t.time  = child->FloatAttribute("time",  0.0f);
             t.align = child->BoolAttribute ("align", false);
- 
+
             if (name == "translate") {
                 for (XMLElement* p = child->FirstChildElement("point");
                      p;
@@ -242,11 +242,11 @@ void parseGroup(XMLElement* element, Group& g) {
         }
     }
 }
- 
+
 // ---------------------------------------------------------------------------
 // CAMERA
 // ---------------------------------------------------------------------------
- 
+
 void updateCameraPosition() {
     float aRad = camAlpha * PI / 180.0f;
     float bRad = camBeta  * PI / 180.0f;
@@ -254,7 +254,7 @@ void updateCameraPosition() {
     gCam.lookAt.y = gCam.pos.y + sinf(bRad);
     gCam.lookAt.z = gCam.pos.z + cosf(bRad) * cosf(aRad);
 }
- 
+
 void initCameraAngles() {
     float dx = gCam.lookAt.x - gCam.pos.x;
     float dy = gCam.lookAt.y - gCam.pos.y;
@@ -263,7 +263,7 @@ void initCameraAngles() {
     camAlpha = atan2f(dx, dz) * 180.0f / PI;
     camBeta  = asinf(dy / r)  * 180.0f / PI;
 }
- 
+
 void processKeys(unsigned char key, int /*x*/, int /*y*/) {
     float aRad = camAlpha * PI / 180.0f;
     float dirX =  sinf(aRad);
@@ -280,7 +280,7 @@ void processKeys(unsigned char key, int /*x*/, int /*y*/) {
     updateCameraPosition();
     glutPostRedisplay();
 }
- 
+
 void processSpecialKeys(int key, int /*x*/, int /*y*/) {
     switch (key) {
         case GLUT_KEY_LEFT:  camAlpha += 2.0f; break;
@@ -291,7 +291,7 @@ void processSpecialKeys(int key, int /*x*/, int /*y*/) {
     updateCameraPosition();
     glutPostRedisplay();
 }
- 
+
 // ---------------------------------------------------------------------------
 // ALIGNMENT MATRIX (align object tangent to Catmull-Rom curve)
 //
@@ -300,7 +300,7 @@ void processSpecialKeys(int key, int /*x*/, int /*y*/) {
 //  Y-axis  = Z × X
 //  The result is stored in column-major order for glMultMatrixf.
 // ---------------------------------------------------------------------------
- 
+
 static Vec3 normalise(Vec3 v) {
     float n = sqrtf(v.x*v.x + v.y*v.y + v.z*v.z);
     if (n < 1e-6f) return {0,0,1};
@@ -311,68 +311,68 @@ static Vec3 cross(Vec3 a, Vec3 b) {
              a.z*b.x - a.x*b.z,
              a.x*b.y - a.y*b.x };
 }
- 
+
 void buildAlignMatrix(Vec3 tangent, float m[16]) {
     // Zero out
     for (int i = 0; i < 16; i++) m[i] = 0.0f;
- 
+
     Vec3 Z  = normalise(tangent);
     Vec3 up = {0.0f, 1.0f, 0.0f};
     // Handle degenerate case where tangent is parallel to up
     if (fabsf(Z.y) > 0.99f) up = {0.0f, 0.0f, 1.0f};
- 
+
     Vec3 X  = normalise(cross(Z, up));
     Vec3 Y  = cross(X, Z);   // already unit length
- 
+
     // Column-major layout for OpenGL
     m[0]  = X.x; m[1]  = X.y; m[2]  = X.z;
     m[4]  = Y.x; m[5]  = Y.y; m[6]  = Y.z;
     m[8]  = Z.x; m[9]  = Z.y; m[10] = Z.z;
     m[15] = 1.0f;
 }
- 
+
 // ---------------------------------------------------------------------------
 // RENDER
 // ---------------------------------------------------------------------------
- 
+
 void renderGroup(const Group& g) {
     glPushMatrix();
- 
+
     float elapsedSec = glutGet(GLUT_ELAPSED_TIME) / 1000.0f;
- 
+
     for (const auto& t : g.transforms) {
- 
+
         if (t.type == "translate") {
- 
+
             if (t.time > 0.0f && t.points.size() >= 4) {
                 // ---- Catmull-Rom animation ----
                 float gt = fmodf(elapsedSec, t.time) / t.time;
- 
+
                 Vec3 pos, deriv;
                 getGlobalCatmullRomPoint(gt, t.points, &pos, &deriv);
- 
+
                 glTranslatef(pos.x, pos.y, pos.z);
- 
+
                 if (t.align) {
                     float m[16] = {};
                     buildAlignMatrix(deriv, m);
                     glMultMatrixf(m);
                 }
- 
+
                 // Draw the trajectory in yellow (save/restore colour state)
                 glPushAttrib(GL_CURRENT_BIT | GL_ENABLE_BIT);
                 glDisable(GL_LIGHTING);
                 glColor3f(1.0f, 1.0f, 0.0f);
                 renderCatmullRomCurve(t.points);
                 glPopAttrib();
- 
+
             } else {
                 // ---- Static translation ----
                 glTranslatef(t.x, t.y, t.z);
             }
- 
+
         } else if (t.type == "rotate") {
- 
+
             float angle;
             if (t.time > 0.0f) {
                 // Full 360° in t.time seconds
@@ -381,12 +381,12 @@ void renderGroup(const Group& g) {
                 angle = t.angle;
             }
             glRotatef(angle, t.x, t.y, t.z);
- 
+
         } else if (t.type == "scale") {
             glScalef(t.x, t.y, t.z);
         }
     }
- 
+
     // Draw models using VBOs
     glEnableClientState(GL_VERTEX_ARRAY);
     for (int idx : g.modelIndices) {
@@ -396,19 +396,19 @@ void renderGroup(const Group& g) {
     }
     glDisableClientState(GL_VERTEX_ARRAY);
     glBindBuffer(GL_ARRAY_BUFFER, 0);
- 
+
     for (const auto& child : g.children) renderGroup(child);
- 
+
     glPopMatrix();
 }
- 
+
 void renderScene() {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     glLoadIdentity();
     gluLookAt(gCam.pos.x,    gCam.pos.y,    gCam.pos.z,
               gCam.lookAt.x, gCam.lookAt.y, gCam.lookAt.z,
               gCam.up.x,     gCam.up.y,     gCam.up.z);
- 
+
     // Coordinate axes (X=red, Y=green, Z=blue)
     glPushAttrib(GL_CURRENT_BIT | GL_ENABLE_BIT);
     glDisable(GL_LIGHTING);
@@ -419,11 +419,11 @@ void renderScene() {
     glEnd();
     glColor3f(1,1,1);
     glPopAttrib();
- 
+
     renderGroup(gRootGroup);
     glutSwapBuffers();
 }
- 
+
 void changeSize(int w, int h) {
     if (h == 0) h = 1;
     glViewport(0, 0, w, h);
@@ -432,41 +432,41 @@ void changeSize(int w, int h) {
     gluPerspective(gCam.fov, (float)w / h, gCam.nearp, gCam.farp);
     glMatrixMode(GL_MODELVIEW);
 }
- 
+
 // ---------------------------------------------------------------------------
 // MAIN
 // ---------------------------------------------------------------------------
- 
+
 int main(int argc, char** argv) {
     if (argc < 2) {
         std::cerr << "Uso: engine <scene.xml>" << std::endl;
         return 1;
     }
- 
+
     // Default camera in case XML parsing fails
     gCam.pos    = {0, 10, 30};
     gCam.lookAt = {0, 0, 0};
     gCam.up     = {0, 1, 0};
- 
+
     // Read XML first (before GLUT so we can read window size)
     XMLDocument doc;
     int winW = 800, winH = 600;
- 
+
     if (doc.LoadFile(argv[1]) != XML_SUCCESS) {
         std::cerr << "Erro ao carregar XML: " << argv[1] << std::endl;
         return 1;
     }
- 
+
     XMLElement* world = doc.FirstChildElement("world");
     if (!world) { std::cerr << "Elemento <world> nao encontrado." << std::endl; return 1; }
- 
+
     // Window size
     XMLElement* win = world->FirstChildElement("window");
     if (win) {
         winW = win->IntAttribute("width",  800);
         winH = win->IntAttribute("height", 600);
     }
- 
+
     // Camera
     XMLElement* cam = world->FirstChildElement("camera");
     if (cam) {
@@ -484,31 +484,31 @@ int main(int argc, char** argv) {
     }
     initCameraAngles();
     updateCameraPosition();
- 
+
     // GLUT init
     glutInit(&argc, argv);
     glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGBA | GLUT_DEPTH);
     glutInitWindowSize(winW, winH);
     glutCreateWindow("CG Engine - Fase 3");
     glewInit();
- 
+
     // Load scene groups (VBOs need an active GL context)
     XMLElement* rootGroup = world->FirstChildElement("group");
     if (rootGroup) parseGroup(rootGroup, gRootGroup);
- 
+
     // OpenGL state
     glEnable(GL_DEPTH_TEST);
     glEnable(GL_CULL_FACE);
     glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
     glClearColor(0.05f, 0.05f, 0.1f, 1.0f);
- 
+
     // Callbacks
     glutDisplayFunc   (renderScene);
     glutIdleFunc      (renderScene);
     glutReshapeFunc   (changeSize);
     glutKeyboardFunc  (processKeys);
     glutSpecialFunc   (processSpecialKeys);
- 
+
     glutMainLoop();
     return 0;
 }
