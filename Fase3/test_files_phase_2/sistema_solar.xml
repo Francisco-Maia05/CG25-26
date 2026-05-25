@@ -161,7 +161,7 @@
                     <point x="-35" y="-8" z="-55"/>
                     <point x="45" y="5" z="-45"/>
                 </translate>
-                <scale x="0.2" y="0.2" z="0.2"/>
+                <scale x="0.9" y="0.9" z="0.9"/>
             </transform>
             <models>
                 <model file="../models_generated/teapot.3d"/>

@@ -1,4 +1,4 @@
-cd "/home/pedroc/Desktop/projetocg/CG25-26/Fase3"
+cd "/home/pedroc/Desktop/projetocg/CG25-26/Fase4"
 rm -rf build
 mkdir build
 cd build

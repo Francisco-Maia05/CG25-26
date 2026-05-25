@@ -1,0 +1,275 @@
+<world>
+    <window width="900" height="700" />
+
+    <camera>
+        <position x="90" y="45" z="90" />
+        <lookAt x="0" y="0" z="0" />
+        <up x="0" y="1" z="0" />
+        <projection fov="60" near="1" far="1000" />
+    </camera>
+
+    <lights>
+        <light type="point" posx="0" posy="0" posz="0" />
+    </lights>
+
+    <group>
+
+        <!-- SOL -->
+        <group>
+            <transform>
+                <scale x="7" y="7" z="7"/>
+            </transform>
+            <models>
+                <model file="../models_generated/sphere.3d">
+                    <color>
+                        <diffuse R="255" G="220" B="80"/>
+                        <ambient R="255" G="180" B="50"/>
+                        <specular R="255" G="255" B="180"/>
+                        <emissive R="180" G="120" B="30"/>
+                        <shininess value="50"/>
+                    </color>
+                </model>
+            </models>
+        </group>
+
+        <!-- MERCURIO -->
+        <group>
+            <transform>
+                <rotate time="8" x="0" y="1" z="0"/>
+                <translate x="12" y="0" z="0"/>
+                <scale x="0.4" y="0.4" z="0.4"/>
+            </transform>
+            <models>
+                <model file="../models_generated/sphere.3d">
+                    <color>
+                        <diffuse R="170" G="170" B="170"/>
+                        <ambient R="60" G="60" B="60"/>
+                        <specular R="90" G="90" B="90"/>
+                        <emissive R="0" G="0" B="0"/>
+                        <shininess value="10"/>
+                    </color>
+                </model>
+            </models>
+        </group>
+
+        <!-- VENUS -->
+        <group>
+            <transform>
+                <rotate time="12" x="0" y="1" z="0"/>
+                <translate x="20" y="0" z="0"/>
+                <scale x="0.7" y="0.7" z="0.7"/>
+            </transform>
+            <models>
+                <model file="../models_generated/sphere.3d">
+                    <color>
+                        <diffuse R="220" G="170" B="90"/>
+                        <ambient R="80" G="50" B="20"/>
+                        <specular R="120" G="120" B="120"/>
+                        <emissive R="0" G="0" B="0"/>
+                        <shininess value="15"/>
+                    </color>
+                </model>
+            </models>
+        </group>
+
+        <!-- TERRA + LUA -->
+        <group>
+            <transform>
+                <rotate time="18" x="0" y="1" z="0"/>
+                <translate x="30" y="0" z="0"/>
+            </transform>
+
+            <!-- TERRA -->
+            <group>
+                <transform>
+                    <scale x="1" y="1" z="1"/>
+                </transform>
+                <models>
+                    <model file="../models_generated/sphere.3d">
+                        <color>
+                            <diffuse R="80" G="120" B="255"/>
+                            <ambient R="20" G="30" B="60"/>
+                            <specular R="120" G="120" B="120"/>
+                            <emissive R="0" G="0" B="0"/>
+                            <shininess value="20"/>
+                        </color>
+                    </model>
+                </models>
+            </group>
+
+            <!-- LUA -->
+            <group>
+                <transform>
+                    <rotate time="4" x="0" y="1" z="0"/>
+                    <translate x="5" y="0" z="0"/>
+                    <scale x="0.3" y="0.3" z="0.3"/>
+                </transform>
+                <models>
+                    <model file="../models_generated/sphere.3d">
+                        <color>
+                            <diffuse R="200" G="200" B="200"/>
+                            <ambient R="70" G="70" B="70"/>
+                            <specular R="80" G="80" B="80"/>
+                            <emissive R="0" G="0" B="0"/>
+                            <shininess value="8"/>
+                        </color>
+                    </model>
+                </models>
+            </group>
+        </group>
+
+        <!-- MARTE -->
+        <group>
+            <transform>
+                <rotate time="24" x="0" y="1" z="0"/>
+                <translate x="42" y="0" z="0"/>
+                <scale x="0.6" y="0.6" z="0.6"/>
+            </transform>
+            <models>
+                <model file="../models_generated/sphere.3d">
+                    <color>
+                        <diffuse R="220" G="90" B="60"/>
+                        <ambient R="70" G="20" B="20"/>
+                        <specular R="70" G="70" B="70"/>
+                        <emissive R="0" G="0" B="0"/>
+                        <shininess value="10"/>
+                    </color>
+                </model>
+            </models>
+        </group>
+
+        <!-- JUPITER -->
+        <group>
+            <transform>
+                <rotate time="34" x="0" y="1" z="0"/>
+                <translate x="58" y="0" z="0"/>
+                <scale x="2.2" y="2.2" z="2.2"/>
+            </transform>
+            <models>
+                <model file="../models_generated/sphere.3d">
+                    <color>
+                        <diffuse R="210" G="160" B="120"/>
+                        <ambient R="70" G="50" B="30"/>
+                        <specular R="90" G="90" B="90"/>
+                        <emissive R="0" G="0" B="0"/>
+                        <shininess value="12"/>
+                    </color>
+                </model>
+            </models>
+        </group>
+
+        <!-- SATURNO + ANEL -->
+        <group>
+            <transform>
+                <rotate time="42" x="0" y="1" z="0"/>
+                <translate x="75" y="0" z="0"/>
+            </transform>
+
+            <!-- planeta -->
+            <group>
+                <transform>
+                    <scale x="1.8" y="1.8" z="1.8"/>
+                </transform>
+                <models>
+                    <model file="../models_generated/sphere.3d">
+                        <color>
+                            <diffuse R="210" G="180" B="120"/>
+                            <ambient R="60" G="50" B="30"/>
+                            <specular R="90" G="90" B="90"/>
+                            <emissive R="0" G="0" B="0"/>
+                            <shininess value="15"/>
+                        </color>
+                    </model>
+                </models>
+            </group>
+
+            <!-- anel -->
+            <group>
+                <transform>
+                    <rotate angle="20" x="1" y="0" z="0"/>
+                    <scale x="3" y="3" z="3"/>
+                </transform>
+                <models>
+                    <model file="../models_generated/ring.3d">
+                        <color>
+                            <diffuse R="200" G="200" B="180"/>
+                            <ambient R="60" G="60" B="50"/>
+                            <specular R="40" G="40" B="40"/>
+                            <emissive R="0" G="0" B="0"/>
+                            <shininess value="5"/>
+                        </color>
+                    </model>
+                </models>
+            </group>
+        </group>
+
+        <!-- URANO -->
+        <group>
+            <transform>
+                <rotate time="52" x="0" y="1" z="0"/>
+                <translate x="90" y="0" z="0"/>
+                <scale x="1.1" y="1.1" z="1.1"/>
+            </transform>
+            <models>
+                <model file="../models_generated/sphere.3d">
+                    <color>
+                        <diffuse R="140" G="220" B="220"/>
+                        <ambient R="40" G="70" B="70"/>
+                        <specular R="100" G="100" B="100"/>
+                        <emissive R="0" G="0" B="0"/>
+                        <shininess value="12"/>
+                    </color>
+                </model>
+            </models>
+        </group>
+
+        <!-- NEPTUNO -->
+        <group>
+            <transform>
+                <rotate time="62" x="0" y="1" z="0"/>
+                <translate x="105" y="0" z="0"/>
+                <scale x="1.1" y="1.1" z="1.1"/>
+            </transform>
+            <models>
+                <model file="../models_generated/sphere.3d">
+                    <color>
+                        <diffuse R="70" G="110" B="255"/>
+                        <ambient R="20" G="30" B="70"/>
+                        <specular R="100" G="100" B="100"/>
+                        <emissive R="0" G="0" B="0"/>
+                        <shininess value="18"/>
+                    </color>
+                </model>
+            </models>
+        </group>
+
+        <!-- COMETA -->
+        <group>
+            <transform>
+                <translate time="20" align="True">
+                    <point x="65" y="10" z="-30"/>
+                    <point x="20" y="25" z="55"/>
+                    <point x="-40" y="15" z="35"/>
+                    <point x="-70" y="5" z="-10"/>
+                    <point x="-30" y="20" z="-60"/>
+                    <point x="40" y="30" z="-55"/>
+                    <point x="80" y="15" z="-5"/>
+                    <point x="65" y="10" z="-30"/>
+                </translate>
+                <scale x="1.2" y="1.2" z="1.2"/>
+            </transform>
+            <models>
+                <model file="../models_generated/teapot.3d">
+                    <color>
+                        <diffuse R="240" G="240" B="240"/>
+                        <ambient R="70" G="70" B="70"/>
+                        <specular R="180" G="180" B="180"/>
+                        <emissive R="0" G="0" B="0"/>
+                        <shininess value="25"/>
+                    </color>
+                </model>
+            </models>
+        </group>
+
+    </group>
+</world>

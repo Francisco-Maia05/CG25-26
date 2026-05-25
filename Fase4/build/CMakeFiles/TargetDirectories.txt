@@ -1,0 +1,4 @@
+/home/pedroc/Desktop/projetocg/CG25-26/Fase4/build/CMakeFiles/generator.dir
+/home/pedroc/Desktop/projetocg/CG25-26/Fase4/build/CMakeFiles/engine.dir
+/home/pedroc/Desktop/projetocg/CG25-26/Fase4/build/CMakeFiles/edit_cache.dir
+/home/pedroc/Desktop/projetocg/CG25-26/Fase4/build/CMakeFiles/rebuild_cache.dir
