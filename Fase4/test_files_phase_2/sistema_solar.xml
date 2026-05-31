@@ -21,6 +21,7 @@
             </transform>
             <models>
                 <model file="../models_generated/sphere.3d">
+                    <texture file="sol.png" />
                     <color>
                         <diffuse R="255" G="220" B="80"/>
                         <ambient R="255" G="180" B="50"/>
@@ -41,6 +42,7 @@
             </transform>
             <models>
                 <model file="../models_generated/sphere.3d">
+                    <texture file="mercurio.jpg" />
                     <color>
                         <diffuse R="170" G="170" B="170"/>
                         <ambient R="60" G="60" B="60"/>
@@ -61,6 +63,7 @@
             </transform>
             <models>
                 <model file="../models_generated/sphere.3d">
+                    <texture file="venus.jpg" />
                     <color>
                         <diffuse R="220" G="170" B="90"/>
                         <ambient R="80" G="50" B="20"/>
@@ -86,6 +89,7 @@
                 </transform>
                 <models>
                     <model file="../models_generated/sphere.3d">
+                        <texture file="earth.jpg" />
                         <color>
                             <diffuse R="80" G="120" B="255"/>
                             <ambient R="20" G="30" B="60"/>
@@ -106,6 +110,7 @@
                 </transform>
                 <models>
                     <model file="../models_generated/sphere.3d">
+                        <texture file="lua.jpg" />
                         <color>
                             <diffuse R="200" G="200" B="200"/>
                             <ambient R="70" G="70" B="70"/>
@@ -127,6 +132,7 @@
             </transform>
             <models>
                 <model file="../models_generated/sphere.3d">
+                    <texture file="marte.jpg" />
                     <color>
                         <diffuse R="220" G="90" B="60"/>
                         <ambient R="70" G="20" B="20"/>
@@ -147,6 +153,7 @@
             </transform>
             <models>
                 <model file="../models_generated/sphere.3d">
+                    <texture file="jupiter.jpg" />
                     <color>
                         <diffuse R="210" G="160" B="120"/>
                         <ambient R="70" G="50" B="30"/>
@@ -172,6 +179,7 @@
                 </transform>
                 <models>
                     <model file="../models_generated/sphere.3d">
+                        <texture file="saturno.jpg" />
                         <color>
                             <diffuse R="210" G="180" B="120"/>
                             <ambient R="60" G="50" B="30"/>
@@ -191,6 +199,7 @@
                 </transform>
                 <models>
                     <model file="../models_generated/ring.3d">
+                        <texture file="aneis-saturno.jpg" />
                         <color>
                             <diffuse R="200" G="200" B="180"/>
                             <ambient R="60" G="60" B="50"/>
@@ -212,6 +221,7 @@
             </transform>
             <models>
                 <model file="../models_generated/sphere.3d">
+                    <texture file="urano.jpg" />
                     <color>
                         <diffuse R="140" G="220" B="220"/>
                         <ambient R="40" G="70" B="70"/>
@@ -232,6 +242,7 @@
             </transform>
             <models>
                 <model file="../models_generated/sphere.3d">
+                    <texture file="neptuno.jpg" />
                     <color>
                         <diffuse R="70" G="110" B="255"/>
                         <ambient R="20" G="30" B="70"/>
@@ -260,6 +271,7 @@
             </transform>
             <models>
                 <model file="../models_generated/teapot.3d">
+                    <texture file="cometa.jpg" />
                     <color>
                         <diffuse R="240" G="240" B="240"/>
                         <ambient R="70" G="70" B="70"/>
