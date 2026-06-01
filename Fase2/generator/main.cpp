@@ -15,7 +15,7 @@ void saveToFile(std::string filename, const std::vector<Point>& points) {
     if (file.is_open()) {
         file << points.size() << "\n";
         for (const auto& p : points) {
-            file << p.x << " " << p.y << " " << p.z << "\n";
+            file << p.x << " " << p.y << " " << p.z << "\n";//escreve a primeira linha(vertices totais) e devolve o tamanho do vetor
         }
         file.close();
         std::cout << "Gerado: " << filename << " (" << points.size() << " vertices)" << std::endl;
@@ -25,7 +25,7 @@ void saveToFile(std::string filename, const std::vector<Point>& points) {
     }
 }
 
-// --- PLANE ---
+// --- PLANE ---quadrado centrado na origem (cada celula tem 2 triangulos)
 void createPlane(float size, int divisions, std::string filename) {
     std::vector<Point> points;
     float start = -size / 2.0f;

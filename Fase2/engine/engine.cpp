@@ -1,3 +1,16 @@
+/*na fase 1 apenas se carregava os ficheiros de forma plana, a fase 2 introduziu scene graph em arvore que permite organizar os modelos e fazer lhes 
+aplicações geometricas 
+
+A Fase 2 acrescentou quatro coisas: uma árvore de grupos (cada grupo tem transformações, modelos e filhos), 
+o suporte às três transformações (translação, rotação, escala), 
+a herança dessas transformações de pai para filho através do push/pop do OpenGL, 
+e a extensão do XML para descrever a hierarquia. 
+A demo é o sistema solar estático — Sol na origem, planetas como filhos, Lua como filha da Terra, anéis como subgrupo de Saturno.
+*/
+
+/*A árvore define uma cadeia de referenciais (espaços locais) encaixados uns dentro dos outros. 
+Cada nó cria o seu próprio espaço local, e os filhos são posicionados dentro desse espaço, não no espaço global.
+*/
 #include <stdlib.h>
 #ifdef __APPLE__
 #include <GLUT/glut.h>
@@ -51,7 +64,7 @@ float speed = 5.0f;
 const float PI = 3.14159265359f;
 
 // --- FUNÇÕES DE CARREGAMENTO E PARSING ---
-
+ //abre um ficheiro .3d, lê o número de vértices da primeira linha e depois carrega todos os x/y/z para o vetor do modelo.
 int loadModel(const std::string& filename) {
     std::ifstream file(filename);
     if (!file.is_open()) {
@@ -70,6 +83,10 @@ int loadModel(const std::string& filename) {
     return (int)gModels.size() - 1;
 }
 
+
+//Percorre os filhos de um elemento <group> e, conforme a tag, faz o seguinte.
+// Se for translate/rotate/scale, cria uma Transformation e adiciona-a à lista do grupo. 
+// Se for transform, chama-se a si própria para ler as transformações lá dentro
 void parseGroup(XMLElement* element, Group& g) {
     for (XMLElement* child = element->FirstChildElement(); child; child = child->NextSiblingElement()) {
         std::string name = child->Name();
@@ -104,7 +121,7 @@ void parseGroup(XMLElement* element, Group& g) {
 }
 
 // --- LÓGICA DA CÂMARA LIVRE ---
-
+//calcula o ponto lookAt a partir da posição da câmara e de dois ângulos usando coordenadas esfericas
 void updateCameraPosition() {
     float alphaRad = camAlpha * PI / 180.0f;
     float betaRad = camBeta * PI / 180.0f;
@@ -128,7 +145,7 @@ void initCameraAngles() {
     camAlpha = atan2(dx, dz) * 180.0f / PI;
     camBeta = asin(dy / r) * 180.0f / PI;
 }
-
+//trata o teclado normal (W/A/S/D para mover, R/F para subir/descer),
 void processKeys(unsigned char key, int xx, int yy) {
     float alphaRad = camAlpha * PI / 180.0f;
     float dirX = sin(alphaRad);
@@ -145,7 +162,7 @@ void processKeys(unsigned char key, int xx, int yy) {
     updateCameraPosition();
     glutPostRedisplay();
 }
-
+//setas
 void processSpecialKeys(int key, int xx, int yy) {
     switch (key) {
         case GLUT_KEY_LEFT:  camAlpha += 2.0f; break;
@@ -158,7 +175,9 @@ void processSpecialKeys(int key, int xx, int yy) {
 }
 
 // --- RENDERIZAÇÃO ---
-
+// Renderiza um grupo da scene graph de forma recursiva: guarda o estado da matriz (push),
+// aplica as transformações do grupo, desenha os seus modelos e visita os filhos (que herdam
+// a matriz acumulada), restaurando o estado no fim (pop) para não afetar os grupos irmãos.
 void renderGroup(const Group& g) {
     glPushMatrix();
     for (const auto& t : g.transforms) {
@@ -176,7 +195,8 @@ void renderGroup(const Group& g) {
     for (const auto& childGroup : g.children) renderGroup(childGroup);
     glPopMatrix();
 }
-
+// Desenha um frame completo: limpa o ecrã, posiciona a câmara (gluLookAt), desenha os eixos
+// de orientação (X vermelho, Y verde, Z azul) e renderiza toda a cena a partir do grupo raiz.
 void renderScene() {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     glLoadIdentity();
@@ -195,7 +215,8 @@ void renderScene() {
     renderGroup(gRootGroup);
     glutSwapBuffers();
 }
-
+// Callback chamado quando a janela muda de tamanho: ajusta o viewport e recalcula a projeção
+// em perspetiva (gluPerspective) para manter o aspect ratio correto.
 void changeSize(int w, int h) {
     if (h == 0) h = 1;
     glViewport(0, 0, w, h);

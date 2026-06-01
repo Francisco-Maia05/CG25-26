@@ -9,3 +9,29 @@ make
 
 
 ./engine ../test_files_phase_2/sistema_solar.xml
+
+
+
+
+
+
+fase 2 ////////////////////////////
+
+cd "/home/pedroc/Desktop/projetocg/CG25-26/Fase2"
+rm -rf build
+mkdir build
+cd build
+cmake ..
+make
+./generator sphere 1 20 20 sun.3d
+./generator sphere 1 20 20 mercury.3d
+./generator sphere 1 20 20 venus.3d
+./generator sphere 1 20 20 earth.3d
+./generator sphere 1 20 20 moon.3d
+./generator sphere 1 20 20 mars.3d
+./generator sphere 1 20 20 jupiter.3d
+./generator sphere 1 20 20 saturn.3d
+./generator sphere 1 20 20 ring.3d
+./generator sphere 1 20 20 uranus.3d
+./generator sphere 1 20 20 neptune.3d
+./engine ../test_files_phase_2/sistema_solar.xml
